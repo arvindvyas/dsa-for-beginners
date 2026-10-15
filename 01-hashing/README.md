@@ -1,152 +1,219 @@
-01 · hashing (HashMap / HashSet)
-================================
+# Hashing
 
-almost every "optimal" solution you'll see later — two sum, sliding window, prefix sums, graph visited sets, DP memo — is a hash map underneath. get this one right and half of DSA gets easier.
+HashMap and HashSet: the most useful tool in DSA.
+{: .lead}
 
-how a HashMap works inside
---------------------------
+## What is hashing?
 
+**Hashing** means turning any piece of data (a number, a word, an object) into a fixed-size number called a **hash**. The function that does this is a **hash function**.
+
+```java
+"apple".hashCode()   // 93029210
+"apple".hashCode()   // 93029210, same input gives the same hash every time
+"apples".hashCode()  // -1411061671, a small change gives a very different hash
 ```
-key "apple" ──hash()──▶ 93029210 ──% 16──▶ bucket 10 ──▶ store value there
+
+Yes, a hash can be negative. The number overflows `int` and wraps around. Keep this in mind for the next sections.
+
+A good hash function has three properties:
+
+1. **Deterministic**: the same input always gives the same hash.
+2. **Spreads values evenly**: different inputs rarely share a hash, so they spread across the buckets.
+3. **Fast**: computing it costs almost nothing.
+
+Why is this useful? With a hash, you can turn "find this item" into "go to this exact position". You don't search for the item. You **calculate** where it is.
+
+## HashMap vs HashSet
+
+Both are built on hashing. The difference is what they store.
+
+| | `HashSet` | `HashMap` |
+|---|---|---|
+| Stores | only keys (values) | key → value pairs |
+| Question it answers | "Is `x` here?" | "What is stored for `x`?" |
+| Example | users who already voted | user → number of votes |
+| Duplicates | ignored | same key overwrites the old value |
+
+Fun fact: in Java, `HashSet` is a `HashMap` underneath. It stores your item as the key and a dummy object as the value.
+
+## Why hashing matters
+
+### In interviews
+
+Hashing is the most common way to turn a slow solution into a fast one.
+
+| Without hashing | With hashing |
+|---|---|
+| "Is `x` in this array?" → scan the array, **O(n)** | `set.contains(x)` → **O(1)** |
+| Check every pair → **O(n²)** | One pass with a map → **O(n)** |
+
+When an interviewer asks "can you do better?", the answer is often "yes, with a HashMap". Many of the next topics also use it inside: sliding window, prefix sums, graph visited sets, and memoization in DP.
+
+### In real systems
+
+You use hashing every day, even when you don't see it:
+
+| Where | How hashing is used |
+|---|---|
+| **Caches** (Redis, Memcached) | key → value lookup in O(1) |
+| **Database indexes** | hash indexes find a row without scanning the table |
+| **Git** | every commit and file is stored by its hash (that's the commit sha) |
+| **Load balancers** | `hash(user_id) % servers` sends the same user to the same server |
+| **Deduplication** | compare file hashes instead of comparing whole files |
+| **Passwords** | stored as a hash, never as plain text (this uses a *cryptographic* hash, which is slow on purpose) |
+
+> A HashMap's hash function and a password hash are different tools. A HashMap needs a **fast** hash. A password needs a **slow**, one-way hash such as bcrypt, so attackers can't guess passwords quickly.
+{: .tip}
+
+### When NOT to use hashing
+
+Hashing is not always the answer:
+
+- **You need sorted order** (smallest, largest, a range of values): use `TreeMap` or `TreeSet`, which are O(log n) but keep keys sorted.
+- **Memory is very tight**: a hash map uses extra memory for buckets and empty slots.
+- **The keys are small integers** such as `0..25` for letters: a plain array `int[26]` is faster and simpler.
+
+## How a HashMap works inside
+
+A HashMap turns a key into an array index, so it can jump straight to the value without searching.
+
+<div class="flow">
+  <span class="node">key "apple"</span>
+  <span class="arrow">hashCode()</span>
+  <span class="node">93029210</span>
+  <span class="arrow">% 16</span>
+  <span class="node">bucket 10</span>
+  <span class="arrow">store</span>
+  <span class="node end">value</span>
+</div>
+
+1. Inside, a HashMap is just an **array of buckets**.
+2. For each key, Java calls `hashCode()` to get a big number.
+3. It turns that number into an index: `index = hash % capacity`.
+4. It goes straight to that index. No scanning, so lookup is **O(1)**.
+
+### Collisions
+
+Two different keys can land in the same bucket. This is called a **collision**. There are two common fixes:
+
+| Method | How it works | Used by |
+|---|---|---|
+| Chaining | Each bucket keeps a small list of entries | Java (a long list becomes a red-black tree since Java 8) |
+| Open addressing | Look for the next empty slot | Python `dict`, Ruby `Hash` |
+
+### Resizing
+
+The **load factor** is `size / capacity`. When it goes above **0.75**, Java doubles the array and moves every key to its new bucket.
+
+One resize costs O(n), but it happens rarely. Spread over all the inserts, each insert is still **O(1) on average**. This is called *amortized* O(1).
+
+> Say "average O(1), worst case O(n)". The worst case happens when every key lands in the same bucket.
+{: .interview}
+
+### Keys must not change
+
+If you change a key after putting it in the map, its hash changes too. The map then looks in the wrong bucket and can't find your value.
+
+> If you override `equals()` in a Java class, you **must** override `hashCode()` too. Otherwise two equal objects can land in different buckets.
+{: .warn}
+
+## Going deeper: Java's HashMap
+
+You don't need these details to solve problems. They help when an interviewer asks follow-up questions.
+
+### How `String.hashCode()` is computed
+
+```java
+// s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]
+int h = 0;
+for (char c : s.toCharArray()) {
+    h = 31 * h + c;
+}
 ```
 
-1. inside, a HashMap is just an **array of buckets**
-2. for every key we compute `hashCode()` → a big number → `index = hash % capacity`
-3. jump straight to that index → **O(1)** lookup, no scanning
+Why 31? It's an odd prime, so it spreads values well. Also, `31 * h` can be computed fast as `(h << 5) - h`. For an `Integer`, the hash code is simply the number itself.
 
-**collision** — two keys land in the same bucket. two ways to handle it:
-- **chaining** — each bucket holds a small list (Java does this; a long chain even turns into a red-black tree since Java 8)
-- **open addressing** — probe for the next free slot (Python `dict`, Ruby `Hash`)
+### Java uses `&` instead of `%`
 
-**resize** — when `size / capacity` (the *load factor*) crosses **0.75**, Java doubles the array and re-hashes every key. that one resize is O(n), but spread across all inserts it's still **amortized O(1)**.
+Java keeps the capacity a power of two (16, 32, 64, ...). Then it can use `hash & (capacity - 1)` instead of `hash % capacity`. This has two benefits:
 
-**worst case** — if every key collides, lookups degrade to O(n). in an interview say: *"average O(1), worst case O(n)."*
+1. A bitwise AND is faster than division.
+2. It always gives an index from `0` to `capacity - 1`, even for a negative hash. In Java, `-1411061671 % 16` is `-7`, which is not a valid array index.
 
-**why keys should be immutable** — change a key after inserting it and its hash changes, so the map looks in the wrong bucket and "loses" your value. in Java, if you override `equals()` you **must** override `hashCode()` too.
+Java also mixes the high bits into the low bits first (`h ^ (h >>> 16)`). Without this step, keys whose hashes differ only in the high bits would all land in the same bucket.
 
-Java cheat sheet
-----------------
+### Default numbers
+
+| Setting | Value |
+|---|---|
+| Starting capacity | 16 buckets |
+| Load factor | 0.75 (16 × 0.75 = 12, so it resizes when the 13th entry is added) |
+| List becomes a tree | when one bucket has more than 8 entries and the map has at least 64 buckets |
+
+### Which map to pick
+
+| Class | Order of keys | Speed | Use when |
+|---|---|---|---|
+| `HashMap` | no order | O(1) | default choice |
+| `LinkedHashMap` | insertion order | O(1) | you need the order items were added (LRU cache) |
+| `TreeMap` | sorted | O(log n) | you need smallest, largest, or a range |
+| `ConcurrentHashMap` | no order | O(1) | many threads read and write at once |
+| `Hashtable` | no order | O(1), slower | old code only, don't use it in new code |
+
+## Java cheat sheet
+
+Count how many times each value appears:
 
 ```java
 Map<Integer, Integer> count = new HashMap<>();
-count.put(x, count.getOrDefault(x, 0) + 1);   // frequency count
-count.merge(x, 1, Integer::sum);              // same thing, shorter
-
-Set<Integer> seen = new HashSet<>();
-if (!seen.add(x)) { /* x was already there */ } // add() returns false on duplicate
-
-Map<String, List<String>> groups = new HashMap<>();
-groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word); // group by key
+count.put(x, count.getOrDefault(x, 0) + 1);
+count.merge(x, 1, Integer::sum);   // same thing, shorter
 ```
 
-the 4 patterns
---------------
-
-| pattern | the question in your head | tool |
-|---|---|---|
-| **seen-set** | "have I seen this before?" | `HashSet` |
-| **frequency count** | "how many times does it appear?" | `HashMap<x, count>` |
-| **complement lookup** | "the number that pairs with me — did it already show up?" | `map.containsKey(target - x)` |
-| **group by key** | "put all things of the same *kind* together" | `HashMap<signature, List>` |
-
-**signal words in a problem:** *duplicate, pair, count, frequency, anagram, seen before, group, first unique* → think hashing.
-
-how this page works: learn → practice
---------------------------------------
-
-each step has two halves:
-
-1. **learn** — one problem explained end to end: intuition, brute force, optimal, dry run, Java code. read it, then type the code yourself.
-2. **practice** — a *different* problem with the **same pattern**. starter file + tests are in [`practice/`](practice/). no solution here — that's the point.
-
-| step | learn (explained) | pattern | practice (you solve) |
-|------|-------------------|---------|----------------------|
-| 1 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | seen-set | [Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/) |
-| 2 | [Valid Anagram](https://leetcode.com/problems/valid-anagram/) | frequency count | soon |
-| 3 | [Two Sum](https://leetcode.com/problems/two-sum/) | complement lookup | soon |
-| 4 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | group by key | soon |
-| 5 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | frequency + bucket sort | soon |
-| 6 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | seen-set trick | soon |
-| 7 | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) | prefix sum + hashmap | soon |
-
----
-
-step 1 · Contains Duplicate
----------------------------
-
-> given an integer array `nums`, return `true` if any value appears **at least twice**, otherwise `false`.
->
-> `[1,2,3,1]` → `true` · `[1,2,3,4]` → `false`
-
-### the question in your head
-
-*"while walking the array — have I seen this number before?"* → that's the **seen-set** pattern.
-
-### approach 1 · brute force — compare every pair
-
-```java
-for (int i = 0; i < nums.length; i++)
-    for (int j = i + 1; j < nums.length; j++)
-        if (nums[i] == nums[j]) return true;
-return false;
-```
-
-- **time O(n²)** — n = 10⁵ means ~5 billion comparisons. too slow.
-- **space O(1)**
-- why `j = i + 1`? comparing `i` with itself would always say "duplicate", and comparing (j, i) after (i, j) is wasted work.
-
-### approach 2 · sort — duplicates become neighbours
-
-```java
-int[] copy = nums.clone();
-Arrays.sort(copy);
-for (int i = 1; i < copy.length; i++)
-    if (copy[i] == copy[i - 1]) return true;
-return false;
-```
-
-- **time O(n log n)** for the sort
-- **space O(1) extra** if you're allowed to sort the input in place, O(n) if you copy it (like above, so the caller's array isn't changed)
-- useful when memory is tight
-
-### approach 3 · HashSet — remember what you've seen ✅
+Check if you have seen a value before:
 
 ```java
 Set<Integer> seen = new HashSet<>();
-for (int x : nums) {
-    if (!seen.add(x)) return true;   // add() returns false if x was already there
+if (!seen.add(x)) {
+    // add() returns false when x was already in the set
 }
-return false;
 ```
 
-- **time O(n)** — one pass, each `add` is O(1) on average
-- **space O(n)** — worst case every element goes into the set
-- **trade-off:** we spend memory to buy speed. this trade appears in almost every hashing problem.
+Group values by a key:
 
-### dry run — `[1, 2, 3, 1]`
-
-| x | seen before `add` | `add(x)` returns | action |
-|---|-------------------|------------------|--------|
-| 1 | {} | true | keep going |
-| 2 | {1} | true | keep going |
-| 3 | {1, 2} | true | keep going |
-| 1 | {1, 2, 3} | **false** | return `true` |
-
-### common mistakes
-
-- calling `seen.contains(x)` and then `seen.add(x)` — works, but two hash lookups where one is enough. `add()` already tells you.
-- returning `false` **inside** the loop (`else return false`) — exits after the first element.
-- not knowing the sorting trade-off — interviewers often ask *"what if you can't use extra memory?"* → answer: sort, O(n log n) time, O(1) space.
-
-### code
-
-[`solutions/ContainsDuplicate.java`](solutions/ContainsDuplicate.java) — all three approaches, tested against each other.
-
-### now you practice → Contains Duplicate II
-
-same pattern, one twist: the two equal values must be **at most `k` positions apart**.
-starter file: [`practice/ContainsDuplicateII.java`](practice/ContainsDuplicateII.java)
-
+```java
+Map<String, List<String>> groups = new HashMap<>();
+groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
 ```
-java 01-hashing/practice/ContainsDuplicateII.java
-```
+
+## The 4 patterns
+
+Almost every hashing problem is one of these four:
+
+| Pattern | Ask yourself | Tool |
+|---|---|---|
+| **Seen set** | Have I seen this value before? | `HashSet` |
+| **Frequency count** | How many times does it appear? | `HashMap<value, count>` |
+| **Complement lookup** | Did the value that pairs with me already appear? | `map.containsKey(target - x)` |
+| **Group by key** | Which items are the same *kind*? | `HashMap<key, List>` |
+
+> Words in the problem that point to hashing: *duplicate, pair, count, frequency, anagram, seen before, group, first unique*.
+{: .tip}
+
+## Steps
+
+Each step is one **learn** problem and one **practice** problem with the same pattern.
+
+<div class="cards">
+  <a class="card" href="01-contains-duplicate.html">
+    <span class="card-step">Step 1 · Seen set</span>
+    <span class="card-title">Contains Duplicate</span>
+    <span class="card-meta">Practice: Contains Duplicate II</span>
+  </a>
+  <div class="card soon"><span class="card-step">Step 2 · Frequency count</span><span class="card-title">Valid Anagram</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Step 3 · Complement lookup</span><span class="card-title">Two Sum</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Step 4 · Group by key</span><span class="card-title">Group Anagrams</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Step 5 · Frequency + buckets</span><span class="card-title">Top K Frequent Elements</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Step 6 · Seen set trick</span><span class="card-title">Longest Consecutive Sequence</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Step 7 · Prefix sum + map</span><span class="card-title">Subarray Sum Equals K</span><span class="card-meta">coming soon</span></div>
+</div>

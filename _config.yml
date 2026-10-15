@@ -1,3 +1,28 @@
-title: dsa for beginners
-description: data structures & algorithms in Java — pattern first, practice always
-theme: jekyll-theme-minimal
+title: DSA for Beginners
+description: Data structures and algorithms in Java. Learn the pattern, then practice it.
+repo_url: https://github.com/arvindvyas/dsa-for-beginners
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+plugins:
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-titles-from-headings
+  - jekyll-default-layout
+
+relative_links:
+  enabled: true
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - "**/*.java"

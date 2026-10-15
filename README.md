@@ -1,45 +1,56 @@
-dsa for beginners
-=================
+# DSA for Beginners
 
-data structures & algorithms, explained the way a friend would explain it over chai.
-no mugging up solutions — we learn the **pattern**, then practice until it sticks.
+Data structures and algorithms in Java, explained in simple English.
+{: .lead}
 
-code is in **Java**. every problem goes: brute force → optimal → dry run → complexity → mistakes we actually made.
+Don't memorize solutions. Learn the **pattern** behind a problem, then practice it until you can spot it in a new problem.
 
-how to use this
----------------
+## How it works
 
-every topic has steps. each step has two parts:
+Every topic is split into small steps. Each step has two parts:
 
-1. **learn** — read one problem explained from start to end. type the code yourself, don't copy-paste.
-2. **practice** — solve a new problem with the same pattern. the starter file and tests are ready. try for 20–30 minutes.
-3. stuck? read the hint first, not a solution.
-4. read the "common mistakes" part. most of the learning is there.
-5. after 3 days, solve the problem again without looking.
+1. **Learn**: one problem explained from start to end, covering the idea, brute force, the optimal solution, a dry run, and the Java code.
+2. **Practice**: a *different* problem that uses the *same* pattern. You get a starter file with tests. You write the solution.
 
-roadmap
--------
+> Type the code yourself, even in the learn part. Reading code feels like understanding it. Typing it shows you whether you really do.
+{: .tip}
 
-| # | topic | status |
-|---|-------|--------|
-| 01 | [hashing (HashMap / HashSet)](01-hashing/) | in progress |
-| 02 | two pointers | soon |
-| 03 | sliding window | soon |
-| 04 | stack | soon |
-| 05 | binary search | soon |
-| 06 | linked list | soon |
-| 07 | trees (BFS / DFS) | soon |
-| 08 | heap / priority queue | soon |
-| 09 | backtracking | soon |
-| 10 | graphs | soon |
-| 11 | dynamic programming | soon |
-| 12 | greedy & intervals | soon |
+## Roadmap
 
-running the code
-----------------
+<div class="cards">
+  <a class="card" href="01-hashing/">
+    <span class="card-step">Topic 01</span>
+    <span class="card-title">Hashing</span>
+    <span class="card-meta">HashMap · HashSet · <span class="badge live">in progress</span></span>
+  </a>
+  <div class="card soon"><span class="card-step">Topic 02</span><span class="card-title">Two pointers</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 03</span><span class="card-title">Sliding window</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 04</span><span class="card-title">Stack</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 05</span><span class="card-title">Binary search</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 06</span><span class="card-title">Linked list</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 07</span><span class="card-title">Trees</span><span class="card-meta">BFS · DFS · coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 08</span><span class="card-title">Heap</span><span class="card-meta">priority queue · coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 09</span><span class="card-title">Backtracking</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 10</span><span class="card-title">Graphs</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 11</span><span class="card-title">Dynamic programming</span><span class="card-meta">coming soon</span></div>
+  <div class="card soon"><span class="card-step">Topic 12</span><span class="card-title">Greedy and intervals</span><span class="card-meta">coming soon</span></div>
+</div>
 
-every solution is a single Java file with its own tests in `main`. no build tool needed (Java 11+):
+## Your study routine
 
+1. Read the topic's overview page.
+2. Open the next step. Read the **learn** part and type the code yourself.
+3. Solve the **practice** problem. Give it 20–30 minutes before asking for help.
+4. Stuck? Open the hint. Only look at a solution after the hint.
+5. Read the **common mistakes** boxes.
+6. Three days later, solve the same problem again without looking.
+
+## Running the code
+
+Every Java file holds its own tests in `main`. You don't need a build tool (Java 11 or newer):
+
+```bash
+java 01-hashing/practice/ContainsDuplicateII.java
 ```
-java 01-hashing/solutions/ContainsDuplicate.java
-```
+
+Each test prints `PASS` or `FAIL`.

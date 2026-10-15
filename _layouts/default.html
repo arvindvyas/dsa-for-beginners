@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title and page.title != site.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="{{ '/' | relative_url }}"><span class="brand-mark">{ }</span> DSA for Beginners</a>
+      <nav class="topnav">
+        <a href="{{ '/' | relative_url }}">Roadmap</a>
+        <a href="{{ '/01-hashing/' | relative_url }}">Hashing</a>
+        <a href="{{ site.repo_url }}">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page">
+    <main class="content" id="content">
+      {{ content }}
+    </main>
+    <aside class="toc" aria-label="On this page">
+      <div class="toc-inner" id="toc"></div>
+    </aside>
+  </div>
+
+  <footer class="footer">
+    <p>Written by <a href="https://github.com/arvindvyas">Arvind Vyas</a> · Code in Java · <a href="{{ site.repo_url }}">Source on GitHub</a></p>
+  </footer>
+
+  <script>
+    (function () {
+      var headings = document.querySelectorAll('#content h2, #content h3');
+      var toc = document.getElementById('toc');
+      if (headings.length < 3) { toc.parentElement.style.display = 'none'; return; }
+      var title = document.createElement('p');
+      title.className = 'toc-title';
+      title.textContent = 'On this page';
+      toc.appendChild(title);
+      var list = document.createElement('ul');
+      headings.forEach(function (h) {
+        if (!h.id) return;
+        var li = document.createElement('li');
+        li.className = h.tagName === 'H3' ? 'toc-sub' : '';
+        var a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      toc.appendChild(list);
+      var links = toc.querySelectorAll('a');
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          links.forEach(function (l) { l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id); });
+        });
+      }, { rootMargin: '0px 0px -75% 0px' });
+      headings.forEach(function (h) { if (h.id) observer.observe(h); });
+    })();
+  </script>
+</body>
+</html>

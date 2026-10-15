@@ -123,13 +123,27 @@ You don't need these details to solve problems. They help when an interviewer as
 
 ### How `String.hashCode()` is computed
 
+This is a simplified version of what `s.hashCode()` does for a string `s`:
+
 ```java
-// s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]
-int h = 0;
-for (char c : s.toCharArray()) {
-    h = 31 * h + c;
+static int hash(String s) {
+    int h = 0;
+    for (char c : s.toCharArray()) {
+        h = 31 * h + c;   // c is used as a number: 'a' = 97, 'b' = 98
+    }
+    return h;
 }
 ```
+
+Example with `s = "ab"`:
+
+| Step | c | h = 31 * h + c |
+|---|---|---|
+| start | | 0 |
+| 1 | `'a'` (97) | 31 × 0 + 97 = **97** |
+| 2 | `'b'` (98) | 31 × 97 + 98 = **3105** |
+
+So `"ab".hashCode()` is `3105`. In general, for a string of length n the result is `s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]`. For long strings this number gets too big for an `int` and wraps around, which is how `"apples"` ends up negative.
 
 Why 31? It's an odd prime, so it spreads values well. Also, `31 * h` can be computed fast as `(h << 5) - h`. For an `Integer`, the hash code is simply the number itself.
 

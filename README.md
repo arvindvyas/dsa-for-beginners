@@ -9,11 +9,13 @@ code is in **Java**. every problem goes: brute force → optimal → dry run →
 how to use this
 ---------------
 
-1. read the concept part of a topic
-2. open the problem on LeetCode and **try it yourself first** (20–30 min)
-3. stuck? read the hint, not the solution
-4. after solving, read the "mistakes" section — that's where the real learning is
-5. come back after 3 days and solve it again without looking
+every topic has steps. each step has two parts:
+
+1. **learn** — read one problem explained from start to end. type the code yourself, don't copy-paste.
+2. **practice** — solve a new problem with the same pattern. the starter file and tests are ready. try for 20–30 minutes.
+3. stuck? read the hint first, not a solution.
+4. read the "common mistakes" part. most of the learning is there.
+5. after 3 days, solve the problem again without looking.
 
 roadmap
 -------

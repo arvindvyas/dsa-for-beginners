@@ -51,17 +51,102 @@ the 4 patterns
 
 **signal words in a problem:** *duplicate, pair, count, frequency, anagram, seen before, group, first unique* → think hashing.
 
-problems
---------
+how this page works: learn → practice
+--------------------------------------
 
-| # | problem | pattern | level |
-|---|---------|---------|-------|
-| 1 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | seen-set | easy |
-| 2 | [Valid Anagram](https://leetcode.com/problems/valid-anagram/) | frequency count | easy |
-| 3 | [Two Sum](https://leetcode.com/problems/two-sum/) | complement lookup | easy |
-| 4 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | group by key | medium |
-| 5 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | frequency + bucket sort | medium |
-| 6 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | seen-set trick | medium |
-| 7 | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) | prefix sum + hashmap | medium (boss) |
+each step has two halves:
 
-<!-- each problem's write-up gets added below as we solve it -->
+1. **learn** — one problem explained end to end: intuition, brute force, optimal, dry run, Java code. read it, then type the code yourself.
+2. **practice** — a *different* problem with the **same pattern**. starter file + tests are in [`practice/`](practice/). no solution here — that's the point.
+
+| step | learn (explained) | pattern | practice (you solve) |
+|------|-------------------|---------|----------------------|
+| 1 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | seen-set | [Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/) |
+| 2 | [Valid Anagram](https://leetcode.com/problems/valid-anagram/) | frequency count | soon |
+| 3 | [Two Sum](https://leetcode.com/problems/two-sum/) | complement lookup | soon |
+| 4 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | group by key | soon |
+| 5 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | frequency + bucket sort | soon |
+| 6 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | seen-set trick | soon |
+| 7 | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) | prefix sum + hashmap | soon |
+
+---
+
+step 1 · Contains Duplicate
+---------------------------
+
+> given an integer array `nums`, return `true` if any value appears **at least twice**, otherwise `false`.
+>
+> `[1,2,3,1]` → `true` · `[1,2,3,4]` → `false`
+
+### the question in your head
+
+*"while walking the array — have I seen this number before?"* → that's the **seen-set** pattern.
+
+### approach 1 · brute force — compare every pair
+
+```java
+for (int i = 0; i < nums.length; i++)
+    for (int j = i + 1; j < nums.length; j++)
+        if (nums[i] == nums[j]) return true;
+return false;
+```
+
+- **time O(n²)** — n = 10⁵ means ~5 billion comparisons. too slow.
+- **space O(1)**
+- why `j = i + 1`? comparing `i` with itself would always say "duplicate", and comparing (j, i) after (i, j) is wasted work.
+
+### approach 2 · sort — duplicates become neighbours
+
+```java
+int[] copy = nums.clone();
+Arrays.sort(copy);
+for (int i = 1; i < copy.length; i++)
+    if (copy[i] == copy[i - 1]) return true;
+return false;
+```
+
+- **time O(n log n)** for the sort
+- **space O(1) extra** if you're allowed to sort the input in place, O(n) if you copy it (like above, so the caller's array isn't changed)
+- useful when memory is tight
+
+### approach 3 · HashSet — remember what you've seen ✅
+
+```java
+Set<Integer> seen = new HashSet<>();
+for (int x : nums) {
+    if (!seen.add(x)) return true;   // add() returns false if x was already there
+}
+return false;
+```
+
+- **time O(n)** — one pass, each `add` is O(1) on average
+- **space O(n)** — worst case every element goes into the set
+- **trade-off:** we spend memory to buy speed. this trade appears in almost every hashing problem.
+
+### dry run — `[1, 2, 3, 1]`
+
+| x | seen before `add` | `add(x)` returns | action |
+|---|-------------------|------------------|--------|
+| 1 | {} | true | keep going |
+| 2 | {1} | true | keep going |
+| 3 | {1, 2} | true | keep going |
+| 1 | {1, 2, 3} | **false** | return `true` |
+
+### common mistakes
+
+- calling `seen.contains(x)` and then `seen.add(x)` — works, but two hash lookups where one is enough. `add()` already tells you.
+- returning `false` **inside** the loop (`else return false`) — exits after the first element.
+- not knowing the sorting trade-off — interviewers often ask *"what if you can't use extra memory?"* → answer: sort, O(n log n) time, O(1) space.
+
+### code
+
+[`solutions/ContainsDuplicate.java`](solutions/ContainsDuplicate.java) — all three approaches, tested against each other.
+
+### now you practice → Contains Duplicate II
+
+same pattern, one twist: the two equal values must be **at most `k` positions apart**.
+starter file: [`practice/ContainsDuplicateII.java`](practice/ContainsDuplicateII.java)
+
+```
+java 01-hashing/practice/ContainsDuplicateII.java
+```

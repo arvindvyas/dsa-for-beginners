@@ -2,8 +2,29 @@ import java.util.*;
 
 public class ContainsDuplicate {
 
+    static boolean bruteForce(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] == nums[j]) return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean sorting(int[] nums) {
+        int[] copy = nums.clone();
+        Arrays.sort(copy);
+        for (int i = 1; i < copy.length; i++) {
+            if (copy[i] == copy[i - 1]) return true;
+        }
+        return false;
+    }
+
     static boolean containsDuplicate(int[] nums) {
-        // TODO: your solution here
+        Set<Integer> seen = new HashSet<>();
+        for (int x : nums) {
+            if (!seen.add(x)) return true;
+        }
         return false;
     }
 
@@ -17,8 +38,8 @@ public class ContainsDuplicate {
     }
 
     static void check(int[] nums, boolean expected) {
-        boolean got = containsDuplicate(nums);
-        String mark = got == expected ? "PASS" : "FAIL";
-        System.out.println(mark + "  " + Arrays.toString(nums) + " -> " + got + " (expected " + expected + ")");
+        boolean[] got = {bruteForce(nums), sorting(nums), containsDuplicate(nums)};
+        boolean ok = got[0] == expected && got[1] == expected && got[2] == expected;
+        System.out.println((ok ? "PASS" : "FAIL") + "  " + Arrays.toString(nums) + " -> " + Arrays.toString(got) + " (expected " + expected + ")");
     }
 }

@@ -7,8 +7,8 @@ Pattern: **seen set** · <span class="badge easy">Easy</span> · [LeetCode 217](
 
 > Given an integer array `nums`, return `true` if any value appears **at least twice**. Return `false` if every value is different.
 >
-> `[1, 2, 3, 1]` → `true`
-> `[1, 2, 3, 4]` → `false`
+> - `[1, 2, 3, 1]` → `true`
+> - `[1, 2, 3, 4]` → `false`
 
 > Before reading on, take 5 minutes and think: how would you check this by hand?
 {: .try}
@@ -117,8 +117,8 @@ Same pattern, with one twist: the two equal numbers must be **at most `k` positi
 
 > Return `true` if there are two different indexes `i` and `j` where `nums[i] == nums[j]` and `|i - j| <= k`.
 >
-> `[1, 2, 3, 1]`, k = 3 → `true` (indexes 0 and 3, distance 3)
-> `[1, 2, 3, 1, 2, 3]`, k = 2 → `false` (every equal pair is 3 apart)
+> - `[1, 2, 3, 1]`, k = 3 → `true` (indexes 0 and 3, distance 3)
+> - `[1, 2, 3, 1, 2, 3]`, k = 2 → `false` (every equal pair is 3 apart)
 
 > Open [`practice/ContainsDuplicateII.java`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/practice/ContainsDuplicateII.java), write your solution, and run it until every test prints `PASS`.
 {: .try}

@@ -200,6 +200,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 40px 0; }
 
 code {
   font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-variant-ligatures: none;
   font-size: 0.86em;
   background: var(--surface-2);
   border-radius: 5px;

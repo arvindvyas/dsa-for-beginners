@@ -165,7 +165,7 @@ a:hover { text-decoration: underline; }
   body { font-size: 16px; }
   .page { padding-top: 24px; }
   .topnav { gap: 14px; font-size: 14px; }
-  .topnav a:first-child { display: none; }
+  .topnav a:first-child, .topnav a:last-child { display: none; }
 }
 
 /* ---------- typography ---------- */

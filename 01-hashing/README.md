@@ -273,7 +273,7 @@ Almost every hashing problem is one of these four:
 | **Seen set** | Have I seen this value before? | `HashSet` / Ruby `Set` |
 | **Frequency count** | How many times does it appear? | `HashMap<value, count>` / `Hash.new(0)` |
 | **Complement lookup** | Did the value that pairs with me already appear? | `map.containsKey(target - x)` / `h.key?(target - x)` |
-| **Group by key** | Which items are the same *kind*? | `HashMap<key, List>` / `Hash.new { \|h, k\| h[k] = [] }` |
+| **Group by key** | Which items are the same *kind*? | `HashMap<key, List>` / `group_by` |
 
 > Words in the problem that point to hashing: *duplicate, pair, count, frequency, anagram, seen before, group, first unique*.
 {: .tip}

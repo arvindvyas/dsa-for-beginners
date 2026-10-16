@@ -25,6 +25,9 @@ If yes, you found a duplicate. If you reach the end without a yes, there is none
 
 Compare every pair of numbers.
 
+> Before you read the code: if every number is compared with every other number, what is the time complexity? Think of the [handshake picture](../00-complexity/02-finding-big-o.html#on--everyone-shakes-hands).
+{: .predict}
+
 ```java
 for (int i = 0; i < nums.length; i++) {
     for (int j = i + 1; j < nums.length; j++) {

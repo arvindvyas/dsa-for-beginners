@@ -3,6 +3,9 @@
 HashMap and HashSet: the most useful tool in DSA.
 {: .lead}
 
+> This page uses O(1), O(n) and O(n²) a lot. If those are new to you, read [Complexity](../00-complexity/) first. It takes about an hour.
+{: .tip}
+
 ## What is hashing?
 
 **Hashing** means turning any piece of data (a number, a word, an object) into a fixed-size number called a **hash**. The function that does this is a **hash function**.
@@ -113,7 +116,7 @@ Two different keys can land in the same bucket. This is called a **collision**. 
 
 The **load factor** is `size / capacity`. When it goes above **0.75**, Java doubles the array and moves every key to its new bucket.
 
-One resize costs O(n), but it happens rarely. Spread over all the inserts, each insert is still **O(1) on average**. This is called *amortized* O(1).
+One resize costs O(n), but it happens rarely. Spread over all the inserts, each insert is still **O(1) on average**. This is called *amortized* O(1) ([explained here](../00-complexity/03-memory-cases-practice.html#amortized-paying-in-instalments)).
 
 > Say "average O(1), worst case O(n)". The worst case happens when every key lands in the same bucket.
 {: .interview}

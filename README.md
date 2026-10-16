@@ -17,9 +17,16 @@ Every code example has a **Java** and a **Ruby** tab. Pick one and the site reme
 > Type the code yourself, even in the learn part. Reading code feels like understanding it. Typing it shows you whether you really do.
 {: .tip}
 
+<div class="review-due" id="review-due"></div>
+
 ## Roadmap
 
 <div class="cards">
+  <a class="card" href="00-complexity/">
+    <span class="card-step">Topic 00 · start here</span>
+    <span class="card-title">Complexity</span>
+    <span class="card-meta">Big O, explained from the start · <span class="badge live">new</span></span>
+  </a>
   <a class="card" href="01-hashing/">
     <span class="card-step">Topic 01</span>
     <span class="card-title">Hashing</span>
@@ -40,12 +47,13 @@ Every code example has a **Java** and a **Ruby** tab. Pick one and the site reme
 
 ## Your study routine
 
+1. New to "O(n)"? Start with [Complexity](00-complexity/). Every other topic uses it.
 1. Read the topic's overview page.
 2. Open the next step. Read the **learn** part and type the code yourself.
 3. Solve the **practice** problem. Give it 20–30 minutes before asking for help.
 4. Stuck? Open the hint. Only look at a solution after the hint.
 5. Read the **common mistakes** boxes.
-6. Three days later, solve the same problem again without looking.
+6. Answer the **Test yourself** questions from memory, then click **"I learned this today"**. The page reminds you to review on day 1, 3, 7 and 21.
 
 ## Running the code
 

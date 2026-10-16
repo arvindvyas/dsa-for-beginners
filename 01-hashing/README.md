@@ -13,7 +13,15 @@ HashMap and HashSet: the most useful tool in DSA.
 "apples".hashCode()  // -1411061671, a small change gives a very different hash
 ```
 
-Yes, a hash can be negative. The number overflows `int` and wraps around. Keep this in mind for the next sections.
+```ruby
+"apple".hash   # 4404261846799124996 (your number will be different)
+"apple".hash   # same number again, in the same run
+"apples".hash  # a very different number
+```
+
+In Java, a hash can be negative. The number overflows `int` and wraps around. Keep this in mind for the next sections.
+
+In Ruby, `"apple".hash` gives a **different number every time you start Ruby**. Ruby adds a random seed when it starts, so attackers can't predict hashes and flood a server with keys that all collide. Inside one run, the same string always gives the same hash, and that is all a `Hash` needs.
 
 A good hash function has three properties:
 
@@ -25,9 +33,9 @@ Why is this useful? With a hash, you can turn "find this item" into "go to this 
 
 ## HashMap vs HashSet
 
-Both are built on hashing. The difference is what they store.
+Both are built on hashing. The difference is what they store. In Ruby, they are called `Set` and `Hash`.
 
-| | `HashSet` | `HashMap` |
+| | `HashSet` (Ruby `Set`) | `HashMap` (Ruby `Hash`) |
 |---|---|---|
 | Stores | only keys (values) | key → value pairs |
 | Question it answers | "Is `x` here?" | "What is stored for `x`?" |
@@ -119,21 +127,46 @@ If you change a key after putting it in the map, its hash changes too. The map t
 
 ## Going deeper: Java's HashMap
 
-You don't need these details to solve problems. They help when an interviewer asks follow-up questions.
+You don't need these details to solve problems. They help when an interviewer asks follow-up questions. Most of this section is about Java. The Ruby differences are called out.
 
 ### How `String.hashCode()` is computed
 
-This is a simplified version of what `s.hashCode()` does for a string `s`:
+This is a simplified version of what `s.hashCode()` does for a string `s`. Copy it into a file and run it:
 
 ```java
-static int hash(String s) {
-    int h = 0;
-    for (char c : s.toCharArray()) {
-        h = 31 * h + c;   // c is used as a number: 'a' = 97, 'b' = 98
+public class Main {
+    static int hash(String s) {
+        int h = 0;
+        for (char c : s.toCharArray()) {
+            h = 31 * h + c;   // c is used as a number: 'a' = 97, 'b' = 98
+        }
+        return h;
     }
-    return h;
+
+    public static void main(String[] args) {
+        System.out.println(hash("ab"));        // 3105
+        System.out.println("ab".hashCode());   // 3105, same as Java's own
+        System.out.println(hash("apples"));    // -1411061671, overflowed
+    }
 }
 ```
+
+```ruby
+def hash31(s)
+  h = 0
+  s.each_char do |c|
+    h = 31 * h + c.ord   # ord turns a character into its number: 'a' = 97
+  end
+  h
+end
+
+puts hash31("ab")       # 3105
+puts hash31("apples")   # 2883905625, Ruby integers never overflow
+puts "ab".hash          # Ruby's own hash is different (see below)
+```
+
+> In Java, a method can't be written inside another method. Put `hash` **next to** `main`, inside the class, not inside `main`. Otherwise you get `illegal start of expression`.
+{: .warn}
 
 Example with `s = "ab"`:
 
@@ -143,7 +176,11 @@ Example with `s = "ab"`:
 | 1 | `'a'` (97) | 31 × 0 + 97 = **97** |
 | 2 | `'b'` (98) | 31 × 97 + 98 = **3105** |
 
-So `"ab".hashCode()` is `3105`. In general, for a string of length n the result is `s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]`. For long strings this number gets too big for an `int` and wraps around, which is how `"apples"` ends up negative.
+So `"ab".hashCode()` is `3105`. In general, for a string of length n the result is `s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]`.
+
+For long strings this number gets too big for an `int` and wraps around. Ruby shows the "real" value for `"apples"`: `2883905625`. That is bigger than the largest `int` (about 2.1 billion), so Java subtracts 2³² and gets `2883905625 - 4294967296 = -1411061671`.
+
+Ruby's own `String#hash` doesn't use the 31 formula. It uses a function called SipHash with a random seed, which is why its value changes between runs.
 
 Why 31? It's an odd prime, so it spreads values well. Also, `31 * h` can be computed fast as `(h << 5) - h`. For an `Integer`, the hash code is simply the number itself.
 
@@ -174,7 +211,10 @@ Java also mixes the high bits into the low bits first (`h ^ (h >>> 16)`). Withou
 | `ConcurrentHashMap` | no order | O(1) | many threads read and write at once |
 | `Hashtable` | no order | O(1), slower | old code only, don't use it in new code |
 
-## Java cheat sheet
+> Ruby's `Hash` keeps keys in the order you added them, like Java's `LinkedHashMap`. Ruby has no built-in sorted map. Sort the keys yourself when you need order.
+{: .tip}
+
+## Cheat sheet
 
 Count how many times each value appears:
 
@@ -182,6 +222,12 @@ Count how many times each value appears:
 Map<Integer, Integer> count = new HashMap<>();
 count.put(x, count.getOrDefault(x, 0) + 1);
 count.merge(x, 1, Integer::sum);   // same thing, shorter
+```
+
+```ruby
+count = Hash.new(0)   # missing keys start at 0
+count[x] += 1
+nums.tally            # count a whole array at once: {1=>2, 2=>1}
 ```
 
 Check if you have seen a value before:
@@ -193,6 +239,15 @@ if (!seen.add(x)) {
 }
 ```
 
+```ruby
+require 'set'
+
+seen = Set.new
+unless seen.add?(x)
+  # add? returns nil when x was already in the set
+end
+```
+
 Group values by a key:
 
 ```java
@@ -200,16 +255,25 @@ Map<String, List<String>> groups = new HashMap<>();
 groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
 ```
 
+```ruby
+groups = Hash.new { |h, k| h[k] = [] }   # missing keys start as a new []
+groups[key] << word
+words.group_by { |w| w.chars.sort.join }  # group a whole array at once
+```
+
+> Don't write `Hash.new([])`. Every missing key then shares the **same** array, so `<<` adds the word to all groups.
+{: .warn}
+
 ## The 4 patterns
 
 Almost every hashing problem is one of these four:
 
 | Pattern | Ask yourself | Tool |
 |---|---|---|
-| **Seen set** | Have I seen this value before? | `HashSet` |
-| **Frequency count** | How many times does it appear? | `HashMap<value, count>` |
-| **Complement lookup** | Did the value that pairs with me already appear? | `map.containsKey(target - x)` |
-| **Group by key** | Which items are the same *kind*? | `HashMap<key, List>` |
+| **Seen set** | Have I seen this value before? | `HashSet` / Ruby `Set` |
+| **Frequency count** | How many times does it appear? | `HashMap<value, count>` / `Hash.new(0)` |
+| **Complement lookup** | Did the value that pairs with me already appear? | `map.containsKey(target - x)` / `h.key?(target - x)` |
+| **Group by key** | Which items are the same *kind*? | `HashMap<key, List>` / `Hash.new { \|h, k\| h[k] = [] }` |
 
 > Words in the problem that point to hashing: *duplicate, pair, count, frequency, anagram, seen before, group, first unique*.
 {: .tip}

@@ -224,8 +224,38 @@ div.highlighter-rouge, pre {
 }
 div.highlighter-rouge pre { border: 0; background: none; }
 
+.code-tabs {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 0 0 20px;
+  overflow: hidden;
+}
+.code-tabs .tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 0 10px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.code-tabs button {
+  font: 500 13px Inter, system-ui, sans-serif;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.code-tabs button:hover { color: var(--text); }
+.code-tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.code-tabs div.highlighter-rouge { border: 0; border-radius: 0; margin: 0; }
+.code-tabs [hidden] { display: none !important; }
+
 .highlight .k, .highlight .kd, .highlight .kr, .highlight .kc, .highlight .kn, .highlight .kp { color: var(--tok-keyword); }
-.highlight .kt, .highlight .nc, .highlight .nn { color: var(--tok-type); }
+.highlight .kt, .highlight .nc, .highlight .nn, .highlight .no, .highlight .nb { color: var(--tok-type); }
+.highlight .ss, .highlight .si { color: var(--tok-string); }
 .highlight .s, .highlight .s1, .highlight .s2, .highlight .sc { color: var(--tok-string); }
 .highlight .m, .highlight .mi, .highlight .mf { color: var(--tok-number); }
 .highlight .c, .highlight .c1, .highlight .cm, .highlight .cs { color: var(--tok-comment); font-style: italic; }

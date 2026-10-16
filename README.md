@@ -1,6 +1,6 @@
 # DSA for Beginners
 
-Data structures and algorithms in Java, explained in simple English.
+Data structures and algorithms in Java and Ruby, explained in simple English.
 {: .lead}
 
 Don't memorize solutions. Learn the **pattern** behind a problem, then practice it until you can spot it in a new problem.
@@ -11,6 +11,8 @@ Every topic is split into small steps. Each step has two parts:
 
 1. **Learn**: one problem explained from start to end, covering the idea, brute force, the optimal solution, a dry run, and the Java code.
 2. **Practice**: a *different* problem that uses the *same* pattern. You get a starter file with tests. You write the solution.
+
+Every code example has a **Java** and a **Ruby** tab. Pick one and the site remembers it on every page.
 
 > Type the code yourself, even in the learn part. Reading code feels like understanding it. Typing it shows you whether you really do.
 {: .tip}
@@ -47,10 +49,11 @@ Every topic is split into small steps. Each step has two parts:
 
 ## Running the code
 
-Every Java file holds its own tests in `main`. You don't need a build tool (Java 11 or newer):
+Every file holds its own tests. You don't need a build tool.
 
 ```bash
-java 01-hashing/practice/ContainsDuplicateII.java
+java 01-hashing/practice/ContainsDuplicateII.java   # Java 11 or newer
+ruby 01-hashing/practice/contains_duplicate_ii.rb   # Ruby 3 or newer
 ```
 
 Each test prints `PASS` or `FAIL`.

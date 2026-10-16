@@ -33,10 +33,53 @@
   </div>
 
   <footer class="footer">
-    <p>Written by <a href="https://github.com/arvindvyas">Arvind Vyas</a> · Code in Java · <a href="{{ site.repo_url }}">Source on GitHub</a></p>
+    <p>Written by <a href="https://github.com/arvindvyas">Arvind Vyas</a> · Code in Java and Ruby · <a href="{{ site.repo_url }}">Source on GitHub</a></p>
   </footer>
 
   <script>
+    (function () {
+      var KEY = 'dsa-lang';
+      var groups = [];
+      document.querySelectorAll('#content div.language-java.highlighter-rouge').forEach(function (javaBlock) {
+        var rubyBlock = javaBlock.nextElementSibling;
+        if (!rubyBlock || !rubyBlock.matches('div.language-ruby.highlighter-rouge')) return;
+        var wrap = document.createElement('div');
+        wrap.className = 'code-tabs';
+        var bar = document.createElement('div');
+        bar.className = 'tab-bar';
+        bar.setAttribute('role', 'tablist');
+        javaBlock.parentNode.insertBefore(wrap, javaBlock);
+        [['java', 'Java', javaBlock], ['ruby', 'Ruby', rubyBlock]].forEach(function (t) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = t[1];
+          b.dataset.lang = t[0];
+          b.setAttribute('role', 'tab');
+          b.addEventListener('click', function () {
+            var before = b.getBoundingClientRect().top;
+            setLang(t[0]);
+            window.scrollBy(0, b.getBoundingClientRect().top - before);
+            try { localStorage.setItem(KEY, t[0]); } catch (e) {}
+          });
+          bar.appendChild(b);
+          t[2].dataset.lang = t[0];
+        });
+        wrap.appendChild(bar);
+        wrap.appendChild(javaBlock);
+        wrap.appendChild(rubyBlock);
+        groups.push(wrap);
+      });
+      function setLang(lang) {
+        groups.forEach(function (g) {
+          g.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.lang === lang); });
+          g.querySelectorAll('div.highlighter-rouge').forEach(function (p) { p.hidden = p.dataset.lang !== lang; });
+        });
+      }
+      var saved = null;
+      try { saved = localStorage.getItem(KEY); } catch (e) {}
+      setLang(saved === 'ruby' ? 'ruby' : 'java');
+    })();
+
     (function () {
       var headings = document.querySelectorAll('#content h2, #content h3');
       var toc = document.getElementById('toc');

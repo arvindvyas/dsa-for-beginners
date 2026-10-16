@@ -34,6 +34,15 @@ for (int i = 0; i < nums.length; i++) {
 return false;
 ```
 
+```ruby
+(0...nums.length).each do |i|
+  (i + 1...nums.length).each do |j|
+    return true if nums[i] == nums[j]
+  end
+end
+false
+```
+
 - **Time: O(n²).** For 100,000 numbers, that is about 5 billion comparisons. Too slow.
 - **Space: O(1).**
 
@@ -52,6 +61,14 @@ for (int i = 1; i < copy.length; i++) {
 return false;
 ```
 
+```ruby
+sorted = nums.sort   # sort returns a new array; sort! would change nums
+(1...sorted.length).each do |i|
+  return true if sorted[i] == sorted[i - 1]
+end
+false
+```
+
 - **Time: O(n log n)**, for the sort.
 - **Space: O(1) extra** if you may sort the input array itself. **O(n)** if you sort a copy, like above, so the caller's array stays unchanged.
 
@@ -67,10 +84,20 @@ for (int x : nums) {
 return false;
 ```
 
+```ruby
+require 'set'
+
+seen = Set.new
+nums.each do |x|
+  return true unless seen.add?(x)
+end
+false
+```
+
 - **Time: O(n).** One pass, and each `add` is O(1) on average.
 - **Space: O(n).** In the worst case, every number goes into the set.
 
-> `seen.add(x)` returns `false` when `x` is already in the set. So one call both checks and inserts.
+> Java's `seen.add(x)` returns `false` when `x` is already in the set. Ruby's `seen.add?(x)` returns `nil`. So one call both checks and inserts.
 {: .tip}
 
 ## Dry run
@@ -97,9 +124,12 @@ This is the main trade-off in hashing: **you spend memory to save time**. You wi
 > A common follow-up: "What if you can't use extra memory?" Answer: sort the array. That takes O(n log n) time and O(1) space.
 {: .interview}
 
+> In Ruby you can also write `nums.uniq.size != nums.size`. It's short, but it always goes through the whole array, even when the duplicate is at the start. In an interview, write the loop first, then mention the one-liner.
+{: .interview}
+
 ## Common mistakes
 
-> Calling `seen.contains(x)` and then `seen.add(x)`. It works, but it does two lookups when `add()` alone is enough.
+> Calling `seen.contains(x)` and then `seen.add(x)` (in Ruby, `include?` then `add`). It works, but it does two lookups when `add()` alone is enough.
 {: .warn}
 
 > Writing `else return false;` inside the loop. The method then returns after checking only the first number.
@@ -107,7 +137,10 @@ This is the main trade-off in hashing: **you spend memory to save time**. You wi
 
 ## Full code
 
-[`solutions/ContainsDuplicate.java`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/solutions/ContainsDuplicate.java) has all three approaches and tests them against each other.
+All three approaches, tested against each other:
+
+- Java: [`solutions/ContainsDuplicate.java`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/solutions/ContainsDuplicate.java)
+- Ruby: [`solutions/contains_duplicate.rb`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/solutions/contains_duplicate.rb)
 
 ## Your turn · Contains Duplicate II
 
@@ -120,7 +153,10 @@ Same pattern, with one twist: the two equal numbers must be **at most `k` positi
 > - `[1, 2, 3, 1]`, k = 3 → `true` (indexes 0 and 3, distance 3)
 > - `[1, 2, 3, 1, 2, 3]`, k = 2 → `false` (every equal pair is 3 apart)
 
-> Open [`practice/ContainsDuplicateII.java`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/practice/ContainsDuplicateII.java), write your solution, and run it until every test prints `PASS`.
+> Open the starter file in your language, write your solution, and run it until every test prints `PASS`.
+>
+> - Java: [`practice/ContainsDuplicateII.java`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/practice/ContainsDuplicateII.java)
+> - Ruby: [`practice/contains_duplicate_ii.rb`](https://github.com/arvindvyas/dsa-for-beginners/blob/main/01-hashing/practice/contains_duplicate_ii.rb)
 {: .try}
 
 <details>
@@ -130,7 +166,7 @@ Same pattern, with one twist: the two equal numbers must be **at most `k` positi
 
 <details>
 <summary>Hint 2</summary>
-<p>A <code>HashSet</code> only stores values. Which structure stores a value together with one extra piece of information about it?</p>
+<p>A <code>HashSet</code> (Ruby: <code>Set</code>) only stores values. Which structure stores a value together with one extra piece of information about it?</p>
 </details>
 
 <div class="pager">
